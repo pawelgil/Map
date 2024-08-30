@@ -48,6 +48,7 @@ extension Map {
             defer { view = newView }
             let animation = context.transaction.animation
             updateAnnotations(on: mapView, from: view, to: newView)
+            updateSelectedItem(on: mapView, from: view, to: newView)
             updateCamera(on: mapView, context: context, animated: animation != nil)
             updateInformationVisibility(on: mapView, from: view, to: newView)
             updateInteractionModes(on: mapView, from: view, to: newView)
@@ -199,6 +200,17 @@ extension Map {
                 }
             }
         }
+        
+        private func updateSelectedItem(on mapView: MKMapView, from previousView: Map?, to newMap: Map) {
+            guard newMap.selectedItem != previousView?.selectedItem else { return }
+            
+            if let newSelectedItem = newMap.selectedItem,
+               let mapAnnotation = annotationContentByID[newSelectedItem] {
+                mapView.selectAnnotation(mapAnnotation.annotation, animated: false)
+            } else {
+                mapView.selectedAnnotations = []
+            }
+        }
 
         private func updatePointOfInterestFilter(on mapView: MKMapView, from previousView: Map?, to newView: Map) {
             if previousView?.pointOfInterestFilter != newView.pointOfInterestFilter {
@@ -255,6 +267,18 @@ extension Map {
             }
             view?.coordinateRegion = mapView.region
             view?.mapRect = mapView.visibleMapRect
+        }
+        
+        public func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+            guard let id = annotationContentByID.first(where: { $0.value.annotation === view.annotation })?.key else {
+                return
+            }
+            
+            self.view?.selectedItem = id
+        }
+        
+        public func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
+            self.view?.selectedItem = nil
         }
 
         @available(macOS 11, *)

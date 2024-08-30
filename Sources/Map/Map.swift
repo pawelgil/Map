@@ -30,6 +30,7 @@ public struct Map<AnnotationItems: RandomAccessCollection, OverlayItems: RandomA
     @Binding var userTrackingMode: UserTrackingMode
 
     let annotationItems: AnnotationItems
+    @Binding var selectedItem: AnnotationItems.Element.ID?
     let annotationContent: (AnnotationItems.Element) -> MapAnnotation
     let clusterAnnotation: (MKClusterAnnotation, [AnnotationItems.Element]) -> MapAnnotation?
 
@@ -185,6 +186,7 @@ extension Map {
         interactionModes: MapInteractionModes = .all,
         userTrackingMode: Binding<UserTrackingMode>? = nil,
         annotationItems: AnnotationItems,
+        selectedItem: Binding<AnnotationItems.Element.ID?> = .constant(.none),
         @MapAnnotationBuilder annotationContent: @escaping (AnnotationItems.Element) -> MapAnnotation,
         @OptionalMapAnnotationBuilder clusterAnnotation: @escaping (MKClusterAnnotation, [AnnotationItems.Element]) -> MapAnnotation? = { _, _ in nil },
         overlayItems: OverlayItems,
@@ -205,6 +207,7 @@ extension Map {
             self._userTrackingMode = .constant(.none)
         }
         self.annotationItems = annotationItems
+        self._selectedItem = selectedItem
         self.annotationContent = annotationContent
         self.clusterAnnotation = clusterAnnotation
         self.overlayItems = overlayItems
@@ -219,6 +222,7 @@ extension Map {
         interactionModes: MapInteractionModes = .all,
         userTrackingMode: Binding<UserTrackingMode>? = nil,
         annotationItems: AnnotationItems,
+        selectedItem: Binding<AnnotationItems.Element.ID?> = .constant(.none),
         @MapAnnotationBuilder annotationContent: @escaping (AnnotationItems.Element) -> MapAnnotation,
         @OptionalMapAnnotationBuilder clusterAnnotation: @escaping (MKClusterAnnotation, [AnnotationItems.Element]) -> MapAnnotation? = { _, _ in nil },
         overlayItems: OverlayItems,
@@ -239,6 +243,7 @@ extension Map {
             self._userTrackingMode = .constant(.none)
         }
         self.annotationItems = annotationItems
+        self._selectedItem = selectedItem
         self.annotationContent = annotationContent
         self.clusterAnnotation = clusterAnnotation
         self.overlayItems = overlayItems
@@ -395,6 +400,7 @@ extension Map where AnnotationItems == [IdentifiableObject<MKAnnotation>] {
         interactionModes: MapInteractionModes = .all,
         userTrackingMode: Binding<UserTrackingMode>? = nil,
         annotations: [MKAnnotation] = [],
+        selectedItem: Binding<AnnotationItems.Element.ID?> = .constant(.none),
         @MapAnnotationBuilder annotationContent: @escaping (MKAnnotation) -> MapAnnotation = { annotation in
             assertionFailure("Please provide an `annotationContent` closure for the values in `annotations`.")
             return ViewMapAnnotation(annotation: annotation) {}
@@ -411,6 +417,7 @@ extension Map where AnnotationItems == [IdentifiableObject<MKAnnotation>] {
             interactionModes: interactionModes,
             userTrackingMode: userTrackingMode,
             annotationItems: annotations.map(IdentifiableObject.init),
+            selectedItem: selectedItem,
             annotationContent: { annotationContent($0.object) },
             clusterAnnotation: { annotation, _ in clusterAnnotation(annotation) },
             overlayItems: overlayItems,
@@ -426,6 +433,7 @@ extension Map where AnnotationItems == [IdentifiableObject<MKAnnotation>] {
         interactionModes: MapInteractionModes = .all,
         userTrackingMode: Binding<UserTrackingMode>? = nil,
         annotations: [MKAnnotation] = [],
+        selectedItem: Binding<AnnotationItems.Element.ID?> = .constant(.none),
         @MapAnnotationBuilder annotationContent: @escaping (MKAnnotation) -> MapAnnotation = { annotation in
             assertionFailure("Please provide an `annotationContent` closure for the values in `annotations`.")
             return ViewMapAnnotation(annotation: annotation) {}
@@ -442,6 +450,7 @@ extension Map where AnnotationItems == [IdentifiableObject<MKAnnotation>] {
             interactionModes: interactionModes,
             userTrackingMode: userTrackingMode,
             annotationItems: annotations.map(IdentifiableObject.init),
+            selectedItem: selectedItem,
             annotationContent: { annotationContent($0.object) },
             clusterAnnotation: { annotation, _ in clusterAnnotation(annotation) },
             overlayItems: overlayItems,
@@ -608,6 +617,7 @@ extension Map where OverlayItems == [IdentifiableObject<MKOverlay>] {
         interactionModes: MapInteractionModes = .all,
         userTrackingMode: Binding<UserTrackingMode>? = nil,
         annotationItems: AnnotationItems,
+        selectedItem: Binding<AnnotationItems.Element.ID?> = .constant(.none),
         @MapAnnotationBuilder annotationContent: @escaping (AnnotationItems.Element) -> MapAnnotation,
         @OptionalMapAnnotationBuilder clusterAnnotation: @escaping (MKClusterAnnotation, [AnnotationItems.Element]) -> MapAnnotation? = { _, _ in nil },
         overlays: [MKOverlay] = [],
@@ -626,6 +636,7 @@ extension Map where OverlayItems == [IdentifiableObject<MKOverlay>] {
             interactionModes: interactionModes,
             userTrackingMode: userTrackingMode,
             annotationItems: annotationItems,
+            selectedItem: selectedItem,
             annotationContent: annotationContent,
             clusterAnnotation: clusterAnnotation,
             overlayItems: overlays.map(IdentifiableObject.init),
@@ -641,6 +652,7 @@ extension Map where OverlayItems == [IdentifiableObject<MKOverlay>] {
         interactionModes: MapInteractionModes = .all,
         userTrackingMode: Binding<UserTrackingMode>? = nil,
         annotationItems: AnnotationItems,
+        selectedItem: Binding<AnnotationItems.Element.ID?> = .constant(.none),
         @MapAnnotationBuilder annotationContent: @escaping (AnnotationItems.Element) -> MapAnnotation,
         @OptionalMapAnnotationBuilder clusterAnnotation: @escaping (MKClusterAnnotation, [AnnotationItems.Element]) -> MapAnnotation? = { _, _ in nil },
         overlays: [MKOverlay] = [],
@@ -659,6 +671,7 @@ extension Map where OverlayItems == [IdentifiableObject<MKOverlay>] {
             interactionModes: interactionModes,
             userTrackingMode: userTrackingMode,
             annotationItems: annotationItems,
+            selectedItem: selectedItem,
             annotationContent: annotationContent,
             clusterAnnotation: clusterAnnotation,
             overlayItems: overlays.map(IdentifiableObject.init),
@@ -837,6 +850,7 @@ extension Map
         interactionModes: MapInteractionModes = .all,
         userTrackingMode: Binding<UserTrackingMode>? = nil,
         annotations: [MKAnnotation] = [],
+        selectedItem: Binding<AnnotationItems.Element.ID?> = .constant(.none),
         @MapAnnotationBuilder annotationContent: @escaping (MKAnnotation) -> MapAnnotation = { annotation in
             assertionFailure("Please provide an `annotationContent` closure for the values in `annotations`.")
             return ViewMapAnnotation(annotation: annotation) {}
@@ -858,6 +872,7 @@ extension Map
             interactionModes: interactionModes,
             userTrackingMode: userTrackingMode,
             annotationItems: annotations.map(IdentifiableObject.init),
+            selectedItem: selectedItem,
             annotationContent: { annotationContent($0.object) },
             clusterAnnotation: { annotation, _ in clusterAnnotation(annotation) },
             overlayItems: overlays.map(IdentifiableObject.init),
@@ -873,6 +888,7 @@ extension Map
         interactionModes: MapInteractionModes = .all,
         userTrackingMode: Binding<UserTrackingMode>? = nil,
         annotations: [MKAnnotation] = [],
+        selectedItem: Binding<AnnotationItems.Element.ID?> = .constant(.none),
         @MapAnnotationBuilder annotationContent: @escaping (MKAnnotation) -> MapAnnotation = { annotation in
             assertionFailure("Please provide an `annotationContent` closure for the values in `annotations`.")
             return ViewMapAnnotation(annotation: annotation) {}
@@ -894,6 +910,7 @@ extension Map
             interactionModes: interactionModes,
             userTrackingMode: userTrackingMode,
             annotationItems: annotations.map(IdentifiableObject.init),
+            selectedItem: selectedItem,
             annotationContent: { annotationContent($0.object) },
             clusterAnnotation: { annotation, _ in clusterAnnotation(annotation) },
             overlayItems: overlays.map(IdentifiableObject.init),

@@ -15,6 +15,9 @@ class MKMapAnnotationView<Content: View>: MKAnnotationView {
     // MARK: Stored Properties
 
     private var controller: NativeHostingController<Content>?
+    private var selectedContent: Content?
+    private var notSelectedContent: Content?
+    private var viewMapAnnotation: ViewMapAnnotation<Content>?
 
     // MARK: Methods
 
@@ -22,13 +25,26 @@ class MKMapAnnotationView<Content: View>: MKAnnotationView {
         annotation = mapAnnotation.annotation
         clusteringIdentifier = mapAnnotation.clusteringIdentifier
 
-        let controller = NativeHostingController(rootView: mapAnnotation.content)
+        self.viewMapAnnotation = mapAnnotation
+        updateContent(for: self.isSelected)
+    }
+    
+    private func updateContent(for selectedState: Bool) {
+        guard let contentView = selectedState ? viewMapAnnotation?.selectedContent : viewMapAnnotation?.content else {
+            return
+        }
+        controller?.view.removeFromSuperview()
+        let controller = NativeHostingController(rootView: contentView)
         addSubview(controller.view)
         bounds.size = controller.preferredContentSize
         self.controller = controller
     }
 
     // MARK: Overrides
+    
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        updateContent(for: selected)
+    }
 
     #if canImport(UIKit)
 
